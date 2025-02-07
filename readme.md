@@ -7,3 +7,10 @@ Instructions:
 (2) Formulate code that will update daily on its own 
 (3) Analyze findings 
 (4) Publish
+
+
+#Open in collab button: 
+
+<a target="_blank" href="https://colab.research.google.com/github/advanced-computing/lost-in-inflation/blob/part1notebook/Project_part_1.ipynb">
+  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+</a>
