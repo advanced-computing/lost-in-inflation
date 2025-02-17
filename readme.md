@@ -1,5 +1,7 @@
 #Project Title: Daily U.S. Inflation Forecast to Trump's Trade War
 
+Please access our app via: https://lost-in-inflationgit-project.streamlit.app/
+
 Our team will focus on tracking daily U.S. inflation data projections by the Federal Reserve and interlay the constantly changing trade policy enviroment under President Trump. Economists, market participants, and consumers alike are expecting an inflationary environment in the short term. Our analysis seeks to test this main hypothesis. 
 
 Instructions: 
