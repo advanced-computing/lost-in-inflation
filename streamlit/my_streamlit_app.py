@@ -4,6 +4,10 @@ import matplotlib.pyplot as plt
 import time
 import altair as alt
 
+# Team Description
+st.title("Lost-in-Inflation Team")
+st.subheader("Team Members: Isaura Arias and Ibrahim Alangari")
+
 # Display a loading message
 st.write("Loading inflation data")
 
@@ -38,7 +42,7 @@ chart = (
         tooltip=["Label:T", "Inflation Type:N", "Rate:Q"],  # Hover tooltips
     )
     .interactive()  # Enable zooming & panning
-    .properties(title="Inflation Newscasting by the Federal Reserve", width=800, height=400)
+    .properties(title="Inflation Nowscasting by the Federal Reserve", width=1200, height=800)
 )
 
 # Display in Streamlit
