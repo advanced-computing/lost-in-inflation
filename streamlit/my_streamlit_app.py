@@ -42,7 +42,7 @@ chart = (
         tooltip=["Label:T", "Inflation Type:N", "Rate:Q"],  # Hover tooltips
     )
     .interactive()  # Enable zooming & panning
-    .properties(title="Inflation Nowscasting by the Federal Reserve", width=1200, height=800)
+    .properties(title="Inflation Nowscasting by the Federal Reserve", width=1200, height=600)
 )
 
 # Display in Streamlit
