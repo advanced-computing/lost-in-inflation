@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 import time
 import altair as alt
 
-
 # Display a loading message
 st.write("Loading inflation data")
 
@@ -21,7 +20,7 @@ for i in range(100):
 st.write("...Let's see what we got")
 
 # Load and Process Data
-df = pd.read_csv("inflationdata2025.csv")
+df = pd.read_csv("streamlit/inflationdata2025.csv")
 df['Label'] = pd.to_datetime(df['Label'])
 df = df.set_index('Label')
 
