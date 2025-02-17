@@ -72,7 +72,7 @@ Pygments==2.19.1
 python-dateutil==2.9.0.post0
 python-json-logger==3.2.1
 pytz==2025.1
-PyYAML==6.0 #changed because causing issue with app deployment
+PyYAML==5.4.1 #changed because causing issue with app deployment
 pyzmq==26.2.1
 referencing==0.36.2
 requests==2.32.3
