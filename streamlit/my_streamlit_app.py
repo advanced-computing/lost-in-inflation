@@ -5,12 +5,19 @@ import time
 import altair as alt
 import plotly.graph_objects as go
 
+import os
+st.write("Current working directory:", os.getcwd())
+st.write("Files in Streamlit directory:", os.listdir("streamlit"))
+
 # Team Description
 st.title("Lost-in-Inflation Team")
 st.subheader("Team Members: Isaura Arias and Ibrahim Alangari")
 
 # Loading message
 st.write("Loading inflation data")
+
+import os
+st.write("Files in Streamlit working directory:", os.listdir("streamlit"))
 
 # Progress bar
 latest_iteration = st.empty()
@@ -62,8 +69,8 @@ st.write("""
          """)
 
 # Code for the second chart's data - modified to be readble in Streamlit Cloud
-china_mxp_path = "streamlit/EIUCOCHNTOT.csv"
-pce_path = "streamlit/MoM PCE.csv"
+china_mxp_path = "./streamlit/EIUCOCHNTOT.csv"
+pce_path = "./streamlit/MoM PCE.csv"
 
 china_mxp = pd.read_csv(china_mxp_path)
 pce = pd.read_csv(pce_path)
