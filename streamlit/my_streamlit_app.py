@@ -61,9 +61,9 @@ st.write("""
          Our data set: https://www.clevelandfed.org/indicators-and-data/inflation-nowcasting 
          """)
 
-# Code for the second chart's data
-china_mxp_path = r'C:\repos\lost-in-inflation\streamlit\EIUCOCHNTOT.csv'
-pce_path = r'C:\repos\lost-in-inflation\streamlit\MoM PCE.csv'
+# Code for the second chart's data - modified to be readble in Streamlit Cloud
+china_mxp_path = "streamlit/EIUCOCHNTOT.csv"
+pce_path = "streamlit/MoM PCE.csv"
 
 china_mxp = pd.read_csv(china_mxp_path)
 pce = pd.read_csv(pce_path)
