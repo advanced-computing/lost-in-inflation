@@ -24,6 +24,13 @@ for i in range(100):
 
 st.write("...Let's see what we got")
 
+st.write("""The following chart shows 4 main measures of inflation:
+CPI measures consumer price changes for a fixed basket of goods and services.
+Core CPI excludes food and energy for a clearer inflation trend.
+PCE tracks consumer spending, adjusting for changes in behavior and a broader range of goods.
+Core PCE excludes food and energy, serving as the Fed’s preferred inflation gauge.""")
+
+
 # Fed inflation data
 df = pd.read_csv("streamlit/monthly-inflation-data.csv")
 df['Label'] = pd.to_datetime(df['Label'])
@@ -77,6 +84,12 @@ pce = pce.drop(columns=['Year', 'Month'])
 china_mxp = china_mxp.drop(columns=['Year', 'Period'])
 china_mxp_18_24 = china_mxp[(china_mxp['Date'] >= '2018-01-01') & (china_mxp['Date'] <= '2024-12-12')]
 
+
+st.write("""The second chart links inflation, represented by PCE, with price of imports from China during the first tariff war. 
+         The metric used is the Import Export Price Index (MXP), which measures the price changes of goods and services traded with the mentioned country """)
+
+
+
 # Creating a Plotly figure
 fig = go.Figure()
 fig.add_trace(go.Scatter(
@@ -93,6 +106,8 @@ fig.add_trace(go.Scatter(
     yaxis='y2',
     mode='lines'
 ))
+
+
 
 # Detailing graph layout
 fig.update_layout(
