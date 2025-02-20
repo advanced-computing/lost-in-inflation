@@ -5,9 +5,6 @@ import time
 import altair as alt
 import plotly.graph_objects as go
 
-import os
-st.write("Current working directory:", os.getcwd())
-st.write("Files in Streamlit directory:", os.listdir("streamlit"))
 
 # Team Description
 st.title("Lost-in-Inflation Team")
