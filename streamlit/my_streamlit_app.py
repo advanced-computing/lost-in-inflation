@@ -24,12 +24,6 @@ for i in range(100):
 
 st.write("...Let's see what we got")
 
-st.write("""The following chart shows 4 main measures of inflation:
-CPI measures consumer price changes for a fixed basket of goods and services.
-Core CPI excludes food and energy for a clearer inflation trend.
-PCE tracks consumer spending, adjusting for changes in behavior and a broader range of goods.
-Core PCE excludes food and energy, serving as the Fed’s preferred inflation gauge.""")
-
 
 # Fed inflation data
 df = pd.read_csv("streamlit/monthly-inflation-data.csv")
@@ -48,7 +42,7 @@ for inflation_type in df.columns:
     ))
 
 fig_inflation.update_layout(
-    title="Monthly Inflation Nowcasting by the Federal Reserve",
+    title="Monthly Percent Change of Inflation - Nowcasting by the Federal Reserve",
     xaxis_title="Date - 2025",
     yaxis_title="Inflation Rate %",
     legend_title="Inflation Type",
@@ -56,11 +50,17 @@ fig_inflation.update_layout(
     height=600
 )
 
+st.write("""The following chart shows 4 main measures of inflation as projected Month-over-Month percent changes:
+CPI measures consumer price changes for a fixed basket of goods and services.
+Core CPI excludes food and energy for a clearer inflation trend.
+PCE tracks consumer spending, adjusting for changes in behavior and a broader range of goods.
+Core PCE excludes food and energy, serving as the Fed’s preferred inflation gauge.""")
+
 # Fed inflation Chart
 st.plotly_chart(fig_inflation, use_container_width=True)
 
 st.write(""" 
-         The Cleveland Fed produces nowcasts (a combination of the word now and forecasts) of the current period's rate of inflation in a given month or quarter—before the official CPI or PCE inflation data are released. 
+         The Cleveland Fed produces nowcasts (a combination of the word now and forecasts) of the current period's rate of inflation before the official CPI or PCE inflation data are released. 
          Such forecasts try to give a sense of where inflation is now and where it is likely to be in the future by relying on high frequency data, such as daily oil and gas prices.
          We are using such nowcasts to get a sense of daily expectations around PCE monthly changes in order to assess comovement with other data sets, such as the price index for Chinese imports into the U.S.
          While the below chart gauges historical co-movement on a monthly basis, the nowcase above will allow us to view expectations for the month ahead before official CPI & PCE data are released.
