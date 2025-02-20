@@ -116,5 +116,8 @@ st.plotly_chart(fig, use_container_width=True)
 
 st.write("""
          While it's not possible to correctly assess correlation without running regression analysis, the chart shows some level of co-movement, particularly from mid-2021 to 2025.
-         In the next phase of our analysis, we will begin looking into such co-movemennts by doing regression analyses of this data and other pertinent data sets that we intend to add.
+         Our interest is on analysing phases of the trade wars with China and their correlation to the PCE inflation marker.
+         In the next phase of our analysis, we will begin looking into such co-movemennts by doing regression analyses of this data and overlaying our current charts with tariff implementation dates and other pertinent data sets that we intend to add.
+         MXP Source: https://data.bls.gov/pdq/SurveyOutputServlet
+         Historical PCE: https://apps.bea.gov/iTable/?reqid=19&step=3&isuri=1&1921=survey&1903=84&_gl=1*htjsf2*_ga*ODM2NzMyNzk3LjE3Mzk5MjI0NjQ.*_ga_J4698JNNFT*MTc0MDAxNjgxMS4yLjAuMTc0MDAxNjgxMS42MC4wLjA.#eyJhcHBpZCI6MTksInN0ZXBzIjpbMSwyLDMsM10sImRhdGEiOltbIk5JUEFfVGFibGVfTGlzdCIsIjg0Il0sWyJDYXRlZ29yaWVzIiwiU3VydmV5Il0sWyJGaXJzdF9ZZWFyIiwiMjAxOCJdLFsiTGFzdF9ZZWFyIiwiMjAyNCJdLFsiU2NhbGUiLCIwIl0sWyJTZXJpZXMiLCJNIl1dfQ==
          """)
