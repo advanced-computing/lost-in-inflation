@@ -5,16 +5,12 @@ import time
 import altair as alt
 import plotly.graph_objects as go
 
-
 # Team Description
 st.title("Lost-in-Inflation Team")
 st.subheader("Team Members: Isaura Arias and Ibrahim Alangari")
 
 # Loading message
 st.write("Loading inflation data")
-
-import os
-st.write("Files in Streamlit working directory:", os.listdir("streamlit"))
 
 # Progress bar
 latest_iteration = st.empty()
