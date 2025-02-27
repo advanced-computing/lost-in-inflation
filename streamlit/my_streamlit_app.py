@@ -26,10 +26,51 @@ def show_loading_bar():
 #Calling the loading bar
 show_loading_bar()
 
-# Fed inflation data
-df = pd.read_csv("streamlit/monthly-inflation-data.csv")
-df['Label'] = pd.to_datetime(df['Label'])
-df = df.set_index('Label')
+#refactored code to read data from folder - also added start_date parameter to filter data
+def load_csv_data(filepath, index_col=None, date_col=None, drop_cols=None, create_date_from=None, period_col=None, start_date=None):
+    df = pd.read_csv(filepath)
+
+    # If date needs to be created from multiple columns (e.g., Year & Month)
+    if create_date_from:
+        df['Date'] = pd.to_datetime(df[create_date_from[0]].astype(str) + '-' + df[create_date_from[1]], format='%Y-%b')
+
+    # Handle Period column if it's in "M01" format (China MXP)
+    elif period_col:
+        df['Month'] = df[period_col].str[1:].astype(int)  # Remove "M" and convert to int
+        df['Date'] = pd.to_datetime(df['Year'].astype(str) + '-' + df['Month'].astype(str), format='%Y-%m')
+
+    # Convert a single column into datetime
+    elif date_col:
+        df[date_col] = pd.to_datetime(df[date_col])
+
+    # Drop unnecessary columns
+    if drop_cols:
+        df = df.drop(columns=drop_cols)
+    
+    # Filter data if start_date is provided
+    if start_date:
+        df = df[df['Date'] >= start_date]
+
+    # Set index if required
+    if index_col:
+        df = df.set_index(index_col)
+
+    return df
+
+# Reading Fed inflation data
+df = load_csv_data("streamlit/monthly-inflation-data.csv", index_col="Label", date_col="Label")
+# Code for the second chart's data - modified to be readble in Streamlit Cloud
+china_mxp = load_csv_data(
+    "./streamlit/EIUCOCHNTOT.csv",
+    period_col="Period",  
+    drop_cols=['Year', 'Period'],
+    start_date="2018-01-01"  # Filter from 2018 onwards
+)
+pce = load_csv_data(
+    "./streamlit/MoM PCE.csv",
+    drop_cols=['Year', 'Month'],  # Drop after creating Date
+    create_date_from=['Year', 'Month']  # Create 'Date' column
+)
 
 # Refactored inflation chart 
 def create_inflation_chart(df):
@@ -73,21 +114,6 @@ st.write("""
          Our data set: https://www.clevelandfed.org/indicators-and-data/inflation-nowcasting 
          """)
 
-# Code for the second chart's data - modified to be readble in Streamlit Cloud
-china_mxp_path = "./streamlit/EIUCOCHNTOT.csv" #this or below can be made DRY
-pce_path = "./streamlit/MoM PCE.csv"
-
-china_mxp = pd.read_csv(china_mxp_path)
-pce = pd.read_csv(pce_path)
-
-# making sure both datasets are in datetime format
-pce['Date'] = pd.to_datetime(pce['Year'].astype(str) + '-' + pce['Month'], format='%Y-%b')
-china_mxp['Date'] = pd.to_datetime(china_mxp['Year'].astype(str) + '-' + china_mxp['Period'].str[1:], format='%Y-%m')
-
-# Cleaning the data by dropping year/month columns & filtering desired timeframe
-pce = pce.drop(columns=['Year', 'Month'])
-china_mxp = china_mxp.drop(columns=['Year', 'Period'])
-china_mxp_18_24 = china_mxp[(china_mxp['Date'] >= '2018-01-01') & (china_mxp['Date'] <= '2024-12-12')]
 
 
 st.write("""The second chart links inflation, represented by PCE, with price of imports from China during the first tariff war. 
@@ -115,27 +141,6 @@ def create_pce_china_mxp_chart(pce, china_mxp):
         mode='lines'
     ))
 
-    fig.update_layout(
-        title="PCE and China MXP Over Time",
-        xaxis=dict(title="Date"),
-        yaxis=dict(
-            title=dict(text="PCE", font=dict(color="blue")),
-            tickfont=dict(color="blue"),
-            side="left"
-        ),
-        yaxis2=dict(
-            title=dict(text="China MXP", font=dict(color="red")),
-            tickfont=dict(color="red"),
-            overlaying="y",
-            side="right"
-        ),
-        legend=dict(x=0.1, y=1),
-    )
-
-    return fig
-
-#Calling the second graph function 
-st.plotly_chart(create_pce_china_mxp_chart(pce, china_mxp), use_container_width=True) #updated
 
 st.write("""
          While it's not possible to correctly assess correlation without running regression analysis, the chart shows some level of co-movement, particularly from mid-2021 to 2025.
