@@ -108,8 +108,8 @@ def create_pce_china_mxp_chart(pce, china_mxp):
     ))
 
     fig.add_trace(go.Scatter(
-        x=china_mxp_18_24['Date'], # has to reference mxp_18_24 specfically now
-        y=china_mxp_18_24['ChinaMXP'],
+        x=china_mxp['Date'], # has to reference mxp_18_24 specfically now
+        y=china_mxp['ChinaMXP'],
         name='China MXP',
         yaxis='y2',
         mode='lines'
@@ -135,7 +135,7 @@ def create_pce_china_mxp_chart(pce, china_mxp):
     return fig
 
 #Calling the second graph function 
-st.plotly_chart(create_pce_china_mxp_chart(pce, china_mxp_18_24), use_container_width=True) #updated
+st.plotly_chart(create_pce_china_mxp_chart(pce, china_mxp), use_container_width=True) #updated
 
 st.write("""
          While it's not possible to correctly assess correlation without running regression analysis, the chart shows some level of co-movement, particularly from mid-2021 to 2025.
