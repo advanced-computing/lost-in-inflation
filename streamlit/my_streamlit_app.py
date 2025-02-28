@@ -58,16 +58,16 @@ def load_csv_data(filepath, index_col=None, date_col=None, drop_cols=None, creat
     return df
 
 # Reading Fed inflation data
-df = load_csv_data("streamlit\monthly-inflation-data.csv", index_col="Label", date_col="Label")
+df = load_csv_data("streamlit/monthly-inflation-data.csv", index_col="Label", date_col="Label")
 # Code for the second chart's data - modified to be readble in Streamlit Cloud
 china_mxp = load_csv_data(
-    "streamlit\EIUCOCHNTOT.csv",
+    "streamlit/EIUCOCHNTOT.csv",
     period_col="Period",  
     drop_cols=['Year', 'Period'],
     start_date="2018-01-01"  # Filter from 2018 onwards
 )
 pce = load_csv_data(
-    "streamlit\MoM PCE.csv",
+    "streamlit/MoM PCE.csv",
     drop_cols=['Year', 'Month'],  # Drop after creating Date
     create_date_from=['Year', 'Month']  # Create 'Date' column
 )
