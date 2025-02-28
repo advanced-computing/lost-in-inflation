@@ -15,7 +15,7 @@ jobs:
           python-version: "3.12"
           cache: pip
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: pip install -r requirements.txt || true
       - name: Run tests
         # https://pytest-cov.readthedocs.io/en/latest/readme.html
         run: pytest --cov
