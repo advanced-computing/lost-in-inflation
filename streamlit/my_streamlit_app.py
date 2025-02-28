@@ -5,6 +5,8 @@ import time
 import altair as alt
 import plotly.graph_objects as go
 
+
+
 # Team Description
 st.title("Lost-in-Inflation Team")
 st.subheader("Team Members: Isaura Arias and Ibrahim Alangari")
@@ -58,16 +60,16 @@ def load_csv_data(filepath, index_col=None, date_col=None, drop_cols=None, creat
     return df
 
 # Reading Fed inflation data
-df = load_csv_data("monthly-inflation-data.csv", index_col="Label", date_col="Label")
+df = load_csv_data(r"C:\repos\lost-in-inflation\streamlit\monthly-inflation-data.csv", index_col="Label", date_col="Label")
 # Code for the second chart's data - modified to be readble in Streamlit Cloud
 china_mxp = load_csv_data(
-    "EIUCOCHNTOT.csv",
+    r"C:\repos\lost-in-inflation\streamlit\EIUCOCHNTOT.csv",
     period_col="Period",  
     drop_cols=['Year', 'Period'],
     start_date="2018-01-01"  # Filter from 2018 onwards
 )
 pce = load_csv_data(
-    "MoM PCE.csv",
+    r"C:\repos\lost-in-inflation\streamlit\MoM PCE.csv",
     drop_cols=['Year', 'Month'],  # Drop after creating Date
     create_date_from=['Year', 'Month']  # Create 'Date' column
 )
@@ -121,10 +123,18 @@ st.write("""The second chart links inflation, represented by PCE, with price of 
 
 
 # Refactoring the second graph
+# Refactored inflation chart for China MXP and PCE
 def create_pce_china_mxp_chart(pce, china_mxp):
     """Creates and returns a Plotly figure for PCE and China MXP data."""
+    # Check if columns exist in both dataframes
+    if 'PCE' not in pce.columns:
+        raise ValueError("The 'PCE' column is missing in the PCE dataframe.")
+    if 'ChinaMXP' not in china_mxp.columns:
+        raise ValueError("The 'ChinaMXP' column is missing in the China MXP dataframe.")
+    
     fig = go.Figure()
 
+    # Adding PCE data trace
     fig.add_trace(go.Scatter(
         x=pce['Date'],
         y=pce['PCE'],
@@ -133,14 +143,36 @@ def create_pce_china_mxp_chart(pce, china_mxp):
         mode='lines'
     ))
 
+    # Adding China MXP data trace
     fig.add_trace(go.Scatter(
-        x=china_mxp['Date'], # has to reference mxp_18_24 specfically now
+        x=china_mxp['Date'],  # Make sure 'ChinaMXP' exists in china_mxp
         y=china_mxp['ChinaMXP'],
         name='China MXP',
         yaxis='y2',
         mode='lines'
     ))
 
+    # Adjust the layout
+    fig.update_layout(
+        title="Co-movement between PCE Inflation and China MXP Price Index",
+        xaxis_title="Date",
+        yaxis_title="PCE Inflation Rate %",
+        yaxis2=dict(
+            title="China MXP Price Index",
+            overlaying="y",
+            side="right"
+        ),
+        width=1200,
+        height=600
+    )
+
+    # Ensure the figure is returned
+    return fig
+
+
+
+#Calling the second chart function and displaying it
+st.plotly_chart(create_pce_china_mxp_chart(pce, china_mxp), use_container_width=True)
 
 st.write("""
          While it's not possible to correctly assess correlation without running regression analysis, the chart shows some level of co-movement, particularly from mid-2021 to 2025.
