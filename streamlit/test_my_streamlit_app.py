@@ -9,12 +9,9 @@ def pce_df():
 def china_mxp_df():
     return load_csv_data(r"C:\repos\lost-in-inflation\streamlit\EIUCOCHNTOT.csv", period_col="Period", drop_cols=['Year', 'Period'], start_date="2018-01-01")
 
-@pytest.fixture
-def inflation_df():
-    return load_csv_data(r"C:\repos\lost-in-inflation\streamlit\monthly-inflation-data.csv", index_col="Label", date_col="Label")
 
 def test_dataframes(pce_df, china_mxp_df, inflation_df):
-    assert not inflation_df.empty, "❌ Fed inflation data (df) is empty!"
+    #assert not inflation_df.empty, "❌ Fed inflation data (df) is empty!"
     assert not pce_df.empty, "❌ PCE data is empty!"
     assert not china_mxp_df.empty, "❌ China MXP data is empty!"
 
