@@ -5,6 +5,12 @@ import time
 import altair as alt
 import plotly.graph_objects as go
 
+#Fixing path handling
+
+import os
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))  
+DATA_DIR = BASE_DIR
 
 
 # Team Description
@@ -60,18 +66,20 @@ def load_csv_data(filepath, index_col=None, date_col=None, drop_cols=None, creat
     return df
 
 # Reading Fed inflation data
-df = load_csv_data(r"C:\repos\lost-in-inflation\streamlit\monthly-inflation-data.csv", index_col="Label", date_col="Label")
+df = load_csv_data(os.path.join(DATA_DIR, "monthly-inflation-data.csv"), index_col="Label", date_col="Label")
+
 # Code for the second chart's data - modified to be readble in Streamlit Cloud
 china_mxp = load_csv_data(
-    r"C:\repos\lost-in-inflation\streamlit\EIUCOCHNTOT.csv",
-    period_col="Period",  
+    os.path.join(DATA_DIR, "EIUCOCHNTOT.csv"),
+    period_col="Period",
     drop_cols=['Year', 'Period'],
-    start_date="2018-01-01"  # Filter from 2018 onwards
+    start_date="2018-01-01"
 )
+
 pce = load_csv_data(
-    r"C:\repos\lost-in-inflation\streamlit\MoM PCE.csv",
-    drop_cols=['Year', 'Month'],  # Drop after creating Date
-    create_date_from=['Year', 'Month']  # Create 'Date' column
+    os.path.join(DATA_DIR, "MoM PCE.csv"),
+    drop_cols=['Year', 'Month'],
+    create_date_from=['Year', 'Month']
 )
 
 # Refactored inflation chart 
