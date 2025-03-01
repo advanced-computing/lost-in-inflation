@@ -16,6 +16,16 @@ jobs:
           cache: pip
       - name: Install dependencies
         run: pip install --no-cache-dir -r requirements.txt || true
+      - name: Check working directory and list files
+        run: |
+          pwd
+          ls -R
+      - name: Print working directory
+        run: pwd
+      - name: List files in the streamlit folder
+        run: |
+          cd streamlit
+          ls -l
       - name: Run tests
         # https://pytest-cov.readthedocs.io/en/latest/readme.html
         run: |
@@ -27,9 +37,3 @@ jobs:
         uses: astral-sh/ruff-action@v3
         with:
           version: latest
-      - name: Print working directory
-        run: pwd
-      - name: List files in the streamlit folder
-        run: |
-          cd streamlit
-          ls -l
