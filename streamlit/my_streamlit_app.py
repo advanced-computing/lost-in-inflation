@@ -1,8 +1,6 @@
 import streamlit as st 
 import pandas as pd
-import matplotlib.pyplot as plt
 import time
-import altair as alt
 import plotly.graph_objects as go
 
 #Fixing path handling

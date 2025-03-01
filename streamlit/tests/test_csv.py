@@ -1,5 +1,4 @@
 import pandas as pd
-import pytest
 
 def fix_and_validate_dates(df):
     """
