@@ -1,13 +1,37 @@
 import streamlit as st
 import os
 import time
+import content as c
 from helpers import load_csv_data
 from charts import create_inflation_chart, create_pce_china_mxp_chart
-from content import INTRO_TEXT, PCE_CHINA_TEXT
 from data_quality import run_quality_checks  # Import data quality checks
 
 # Paths
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+st.header("Tariff-Inflation Analysis")
+st.subheader("Ibrahim & Isaura")
+st.header("Proposal")
+st.subheader("What dataset are you going to use?")
+st.write(c.USED_DATASETS)
+st.subheader("What are your research question(s)?")
+st.write(c.RESEARCH_QUESTIONS)
+st.subheader("Google Colab Link")
+st.write(c.GC_LINK)
+st.subheader("Target Visualization")
+st.write(c.TARGET_VIS)
+st.subheader("Known Unknowns")
+st.write(c.KNOWN_UNKNOWN)
+st.subheader("Anticipated Challenges")
+st.write(c.CHALLENGES)
+st.header("Updates")
+st.subheader("Post-review Insights")
+st.write(c.INSIGHTS)
+st.subheader("Post-review Adjustments")
+st.write(c.ADJUSTMENTS)
+
+
+st.header("Analysis")
 
 # Loading Data - now limited to PCE
 @st.cache_data
@@ -48,8 +72,9 @@ with st.spinner("Loading inflation data..."):
 st.write("...Let's see what we got")
 
 # Display Charts
-st.plotly_chart(create_inflation_chart(data["fed"]), use_container_width=True)
-st.write(INTRO_TEXT)
 
+st.write(c.INTRO_TEXT)
+st.plotly_chart(create_inflation_chart(data["fed"]), use_container_width=True)
+
+st.write(c.PCE_CHINA_TEXT)
 st.plotly_chart(create_pce_china_mxp_chart(data["pce"], data["china_mxp"]), use_container_width=True)
-st.write(PCE_CHINA_TEXT)

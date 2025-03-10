@@ -1,10 +1,52 @@
 # content.py
 
-INTRO_TEXT = """
-The following chart shows 4 main measures of inflation as projected Month-over-Month percent changes:
+USED_DATASETS = """
+- Daily Inflation projection data from the Fed: [Cleveland Fed Inflation Nowcasting](https://www.clevelandfed.org/indicators-and-data/inflation-nowcasting)
+- (Potentially) Daily gas averages by state: [AAA State Gas Price Averages](https://gasprices.aaa.com/state-gas-price-averages/) as well as other alternative data showcasing the impact of inflation on consumers.
+- Inflation data from other countries - TBD based on the below considerations.
+"""  
 
-- **CPI** measures consumer price changes for a fixed basket of goods and services.
-- **Core CPI** excludes food and energy for a clearer inflation trend.
+RESEARCH_QUESTIONS = """
+Expecting increased use of tariffs by the new Trump administration, we will try to answer the following:
+- Can we see in real time the effects of Trump's tariffs on inflation in the United States?
+- Are American consumers experiencing more inflation compared to their [Canadian*] and [Mexican*] counterparts? (*subject to change based on trajectory of trade policy)
+"""
+
+GC_LINK = """
+[Google Colab Notebook](https://colab.research.google.com/drive/1BpQXcvX4XtfhNl1k0CyKkKmxlMFvOyDh?usp=sharing)
+"""
+
+TARGET_VIS = """
+Time series analysis of inflation (potentially overlaid by tariff imposition dates & other alternative measures of inflation)
+"""
+
+KNOWN_UNKNOWN = """
+- We don’t know when exactly the tariffs will be implemented (if at all), as this is an active discussion with frequent updates.
+- There are many factors affecting inflation, and we won’t know all the reasons when trying to draw conclusions from the data.
+"""
+
+CHALLENGES = """
+- Technical difficulty in accessing gas prices data through API.
+- Unifying measures of inflation (baskets of goods used to measure inflation could be different between countries).
+- Different levels of data availability and publishing frequency between sources.
+"""
+
+INSIGHTS = """
+- One major insight is that establishing the relation requires more than 1-2 datasets and requires regression analysis, not only analyzing charts.
+- Another insight is that the implementation of announced tariffs wasn't as expected; it was delayed twice, which reduces chances of witnessing the relation of interest.
+"""
+
+ADJUSTMENTS= """
+- We will narrow the scope in two ways:
+  - We will focus on PCE metrics to avoid confusion with CPI metrics.
+  - We initially had a large scope geographically, so we will narrow the scope to the US to have more targeted insights.
+- We will highlight major policy updates (e.g., tariff announcements and implementation).
+"""  
+
+
+INTRO_TEXT = """
+The following chart shows 2 main measures of inflation as projected Month-over-Month percent changes:
+
 - **PCE** tracks consumer spending, adjusting for changes in behavior and a broader range of goods.
 - **Core PCE** excludes food and energy, serving as the Fed’s preferred inflation gauge.
 
@@ -29,3 +71,4 @@ In the next phase of our analysis, we will begin looking into such co-movements 
 - [MXP Data](https://data.bls.gov/pdq/SurveyOutputServlet)  
 - [Historical PCE](https://apps.bea.gov/iTable/)
 """
+
