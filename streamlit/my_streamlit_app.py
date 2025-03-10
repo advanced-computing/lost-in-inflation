@@ -9,20 +9,23 @@ from data_quality import run_quality_checks  # Import data quality checks
 # Paths
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# Loading Data
+# Loading Data - now limited to PCE
 @st.cache_data
 def get_data():
     fed = load_csv_data(os.path.join(BASE_DIR, "monthly-inflation-data.csv"), index_col="Label", date_col="Label")
-    china_mxp = load_csv_data(os.path.join(BASE_DIR, "EIUCOCHNTOT.csv"), period_col="Period", drop_cols=['Year', 'Period'], start_date="2018-01-01")
+
+    # Keep only PCE & Core PCE
+    pce_columns = ["PCE", "Core PCE"]
+    fed = fed[pce_columns] if all(col in fed.columns for col in pce_columns) else fed
+
     pce = load_csv_data(os.path.join(BASE_DIR, "MoM PCE.csv"), drop_cols=['Year', 'Month'], create_date_from=['Year', 'Month'])
 
     # Run Data Quality Checks
-    st.write("Running data quality checks...")
-    run_quality_checks(fed, expected_columns=["Label"], date_column="Label", numeric_columns=fed.columns.tolist()[1:])
-    run_quality_checks(china_mxp, expected_columns=["Date", "ChinaMXP"], date_column="Date", numeric_columns=["ChinaMXP"])
+    st.write(" Running data quality checks...")
+    run_quality_checks(fed, expected_columns=pce_columns, date_column="Label", numeric_columns=pce_columns)
     run_quality_checks(pce, expected_columns=["Date", "PCE"], date_column="Date", numeric_columns=["PCE"])
 
-    return {"fed": fed, "china_mxp": china_mxp, "pce": pce}
+    return {"fed": fed, "pce": pce}
 
 # Load Data with Spinner
 with st.spinner("Loading inflation data..."):
