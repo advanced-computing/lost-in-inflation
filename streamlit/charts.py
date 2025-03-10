@@ -1,12 +1,14 @@
 import plotly.graph_objects as go
 
 def create_inflation_chart(df):
+    """Creates a Plotly chart for PCE and Core PCE inflation data - leaving out all CPI data, which are partially missing."""
     fig = go.Figure()
+
     for col in df.columns:
         fig.add_trace(go.Scatter(x=df.index, y=df[col], mode='lines', name=col))
 
     fig.update_layout(
-        title="Monthly Inflation Projections - Federal Reserve",
+        title="Monthly PCE & Core PCE Inflation - Federal Reserve",
         xaxis_title="Date",
         yaxis_title="Inflation Rate %",
         legend_title="Inflation Type",
@@ -14,6 +16,7 @@ def create_inflation_chart(df):
         height=600
     )
     return fig
+
 
 def create_pce_china_mxp_chart(pce, china_mxp):
     if 'PCE' not in pce.columns or 'ChinaMXP' not in china_mxp.columns:
