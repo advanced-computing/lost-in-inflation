@@ -199,4 +199,9 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+
+streamlit/sipa-adv-c-ibrahim-isaura-b600557db0a3.json
+secrets.toml
+
+
 # End of https://www.toptal.com/developers/gitignore/api/python,windows
