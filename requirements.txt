@@ -12,3 +12,5 @@ ruff
 ydata-profiling
 plotly
 streamlit
+pandas-gbq
+google-cloud-bigquery

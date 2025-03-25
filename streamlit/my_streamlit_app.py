@@ -78,3 +78,6 @@ st.plotly_chart(create_inflation_chart(data["fed"]), use_container_width=True)
 
 st.write(c.PCE_CHINA_TEXT)
 st.plotly_chart(create_pce_china_mxp_chart(data["pce"], data["china_mxp"]), use_container_width=True)
+
+
+
