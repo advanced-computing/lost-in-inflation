@@ -1,6 +1,20 @@
 import os
 import pytest
 from my_streamlit_app import load_csv_data
+from unittest.mock import patch
+
+# Mock Streamlit secrets for testing
+@pytest.fixture
+def mock_secrets():
+    secrets = {
+        "google_cloud": {
+            "project_id": "test_project_id",
+            "service_account_file": "test_service_account_file.json"
+        }
+    }
+    with patch("streamlit.secrets", secrets):
+        yield secrets
+
 
 # Get the absolute path of the `streamlit/` directory (where this script is located)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # This is `/home/runner/work/lost-in-inflation/lost-in-inflation/streamlit`
@@ -17,11 +31,14 @@ def china_mxp_df():
     return load_csv_data(csv_path, period_col="Period", drop_cols=['Year', 'Period'], start_date="2018-01-01")
 
 @pytest.fixture
-def inflation_df():
-    csv_path = os.path.join(DATA_DIR, "monthly-inflation-data.csv")
-    return load_csv_data(csv_path, index_col="Label", date_col="Label")
+def mock_bigquery_data():
+    # Simulate data as if it was loaded from BigQuery
+    return load_csv_data(os.path.join(DATA_DIR, "monthly-inflation-data.csv"), index_col="Label", date_col="Label")
 
-def test_dataframes(pce_df, china_mxp_df, inflation_df):
+def test_dataframes(mock_bigquery_data, pce_df, china_mxp_df):
+    # Instead of calling BigQuery, use the mock data
+    inflation_df = mock_bigquery_data
+
     assert not pce_df.empty, "❌ PCE data is empty!"
     assert not china_mxp_df.empty, "❌ China MXP data is empty!"
     assert not inflation_df.empty, "❌ Inflation data is empty!"
