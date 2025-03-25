@@ -37,6 +37,22 @@ except Exception:
 df = pd.read_csv(CSV_FILE)
 df["Label"] = pd.to_datetime(df["Label"]).dt.date  # Ensure 'Label' column is in the correct date format
 
+# Function to query data from BigQuery
+def load_bigquery_data(query):
+    # Retrieve secrets from Streamlit's secrets management
+    PROJECT_ID = st.secrets["google_cloud"]["project_id"]
+    SERVICE_ACCOUNT_FILE = st.secrets["google_cloud"]["service_account_file"]
+
+    # Authenticate with Google Cloud using the service account file from secrets
+    credentials = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE)
+    client = bigquery.Client(credentials=credentials, project=PROJECT_ID)
+
+    # Execute the query and return the result as a DataFrame
+    df = client.query(query).to_dataframe()
+    return df
+
+
+
 # Load data into BigQuery
 job_config = bigquery.LoadJobConfig(
     schema=schema,
