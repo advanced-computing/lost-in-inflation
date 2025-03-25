@@ -1,6 +1,7 @@
 import os
 import pytest
 from my_streamlit_app import load_csv_data
+from Gbqload import load_bigquery_data
 from unittest.mock import patch
 
 # Mock Streamlit secrets for testing
