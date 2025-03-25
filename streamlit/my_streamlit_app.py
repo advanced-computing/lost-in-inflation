@@ -2,6 +2,7 @@ import streamlit as st
 import os
 import time
 import content as c
+from Gbqload import load_bigquery_data
 from helpers import load_csv_data
 from charts import create_inflation_chart, create_pce_china_mxp_chart
 from data_quality import run_quality_checks  # Import data quality checks
@@ -33,10 +34,16 @@ st.write(c.ADJUSTMENTS)
 
 st.header("Analysis")
 
-# Loading Data - now limited to PCE
+
+# Loading Data - now limited to PCE (from BigQuery for fed)
 @st.cache_data
 def get_data():
-    fed = load_csv_data(os.path.join(BASE_DIR, "monthly-inflation-data.csv"), index_col="Label", date_col="Label")
+    # Modify to load 'fed' data from BigQuery using the load_bigquery_data function
+    pce_query = """
+    SELECT Label, `PCE Inflation`, `Core PCE Inflation`
+    FROM `sipa-adv-c-ibrahim-isaura.inflation_data.monthly_pce_inflation`
+    """
+    fed = load_bigquery_data(pce_query)
 
     # Keep only PCE & Core PCE, but leave china_mxp untouched
     pce_columns = ["PCE Inflation", "Core PCE Inflation"]
