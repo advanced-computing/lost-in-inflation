@@ -4,21 +4,15 @@ from google.oauth2 import service_account
 import streamlit as st
 
 # Retrieve secrets from Streamlit's secrets management
-PROJECT_ID = st.secrets["bigquery"]["project_id"]
-PRIVATE_KEY = st.secrets["bigquery"]["private_key"]
-CLIENT_EMAIL = st.secrets["bigquery"]["client_email"]
+PROJECT_ID = st.secrets["google_cloud"]["project_id"]
+SERVICE_ACCOUNT_FILE = st.secrets["google_cloud"]["service_account_file"]
 DATASET_ID = "inflation_data"
 TABLE_ID = "monthly_pce_inflation"
 CSV_FILE = "streamlit/monthly-inflation-data.csv"
 
 # Authenticate using values from secrets.toml
-credentials = service_account.Credentials.from_service_account_info({
-    "type": "service_account",
-    "project_id": PROJECT_ID,
-    "private_key": PRIVATE_KEY,
-    "client_email": CLIENT_EMAIL,
-    "token_uri": "https://oauth2.googleapis.com/token"
-})
+# Authenticate with Google Cloud using the service account file from secrets
+credentials = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE)
 client = bigquery.Client(credentials=credentials, project=PROJECT_ID)
 
 # Define dataset/table reference
