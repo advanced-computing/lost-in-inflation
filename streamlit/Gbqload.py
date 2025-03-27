@@ -1,18 +1,18 @@
 import pandas as pd
+import json 
 from google.cloud import bigquery
 from google.oauth2 import service_account
 import streamlit as st
-
-# Retrieve secrets from Streamlit's secrets management
+# Retrieve secrets
 PROJECT_ID = st.secrets["google_cloud"]["project_id"]
-SERVICE_ACCOUNT_FILE = st.secrets["google_cloud"]["service_account_file"]
+credentials_dict = json.loads(st.secrets["google_cloud"]["credentials"])
 DATASET_ID = "inflation_data"
 TABLE_ID = "monthly_pce_inflation"
 CSV_FILE = "streamlit/monthly-inflation-data.csv"
 
 # Authenticate using values from secrets.toml
-# Authenticate with Google Cloud using the service account file from secrets
-credentials = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE)
+# Authenticate with Google Cloud using the service account JSON from secrets
+credentials = service_account.Credentials.from_service_account_info(credentials_dict)
 client = bigquery.Client(credentials=credentials, project=PROJECT_ID)
 
 # Define dataset/table reference
