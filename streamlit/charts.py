@@ -5,10 +5,16 @@ def create_inflation_chart(df):
     fig = go.Figure()
 
     for col in df.columns:
-        fig.add_trace(go.Scatter(x=df.index, y=df[col], mode='lines', name=col))
+        fig.add_trace(go.Scatter(
+            x=df.index,
+            y=df[col],
+            mode='lines+markers',  # Show actual points
+            name=col,
+            connectgaps=False     # <- Key part: avoids misleading zig-zags
+        ))
 
     fig.update_layout(
-        title="Monthly PCE & Core PCE Inflation - Federal Reserve",
+        title="Daily Nowcast PCE & Core PCE Inflation - Cleveland Fed",
         xaxis_title="Date",
         yaxis_title="Inflation Rate %",
         legend_title="Inflation Type",
@@ -16,7 +22,6 @@ def create_inflation_chart(df):
         height=600
     )
     return fig
-
 
 def create_pce_china_mxp_chart(pce, china_mxp):
     if 'PCE' not in pce.columns or 'ChinaMXP' not in china_mxp.columns:

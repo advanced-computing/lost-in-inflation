@@ -1,6 +1,7 @@
 import streamlit as st
 import os
 import time
+import pandas as pd
 import content as c
 from Gbqload import load_bigquery_data
 from helpers import load_csv_data
@@ -23,13 +24,13 @@ tab1, tab2 = st.tabs(["📄 Proposal & Project Description", "📊 Analysis"])
 # =======================
 with tab1:
     st.header("Proposal")
-    st.subheader(" What dataset are you going to use?")
+    st.subheader("What dataset are you going to use?")
     st.write(c.USED_DATASETS)
 
-    st.subheader(" What are your research question(s)?")
+    st.subheader("What are your research question(s)?")
     st.write(c.RESEARCH_QUESTIONS)
 
-    st.subheader(" Google Colab Link")
+    st.subheader("Google Colab Link")
     st.write(c.GC_LINK)
 
     st.subheader("Target Visualization")
@@ -38,11 +39,11 @@ with tab1:
     st.subheader("Known Unknowns")
     st.write(c.KNOWN_UNKNOWN)
 
-    st.subheader(" Anticipated Challenges")
+    st.subheader("Anticipated Challenges")
     st.write(c.CHALLENGES)
 
     st.header("Updates")
-    st.subheader(" Post-review Insights")
+    st.subheader("Post-review Insights")
     st.write(c.INSIGHTS)
 
     st.subheader("Post-review Adjustments")
@@ -60,11 +61,23 @@ with tab2:
         SELECT Label, `PCE Inflation`, `Core PCE Inflation`
         FROM `sipa-adv-c-ibrahim-isaura.inflation_data.monthly_pce_inflation`
         """
-        fed = load_bigquery_data(pce_query)
+        fed = load_csv_data(
+            os.path.join(BASE_DIR, "monthly-inflation-data.csv"),
+            drop_cols=[],
+            date_col="Label"
+        )
 
+        # Convert Label to datetime (MM/DD/YYYY format is okay without format arg)
+        fed["Label"] = pd.to_datetime(fed["Label"], errors="coerce")
+        fed = fed.dropna(subset=["Label"])
+        fed = fed.sort_values("Label")
+
+        # Set the date as the index
+        fed.set_index("Label", inplace=True)
+
+        # Select only relevant columns
         pce_columns = ["PCE Inflation", "Core PCE Inflation"]
-        if all(col in fed.columns for col in pce_columns):
-            fed = fed[pce_columns]
+        fed = fed[pce_columns]
 
         china_mxp = load_csv_data(
             os.path.join(BASE_DIR, "EIUCOCHNTOT.csv"),
