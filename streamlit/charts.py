@@ -2,26 +2,60 @@ import plotly.graph_objects as go
 from datetime import datetime
 
 def create_inflation_chart(df):
-    """Creates a Plotly chart for PCE and Core PCE inflation data - leaving out all CPI data, which are partially missing."""
+    """Creates a Plotly chart for PCE and Core PCE inflation data with 2025 tariff events."""
     fig = go.Figure()
 
+    # Plot each inflation series
     for col in df.columns:
         fig.add_trace(go.Scatter(
             x=df.index,
             y=df[col],
-            mode='lines+markers',  # Show actual points
+            mode='lines+markers',
             name=col,
-            connectgaps=False     # <- Key part: avoids misleading zig-zags
+            connectgaps=False
         ))
 
+    # Tariff event dates (announced + implemented only)
+    tariff_events = [
+        {"date": datetime(2025, 2, 1), "label": "Tariffs Announced\nCanada, Mexico, China"},
+        {"date": datetime(2025, 3, 4), "label": "Tariffs Implemented\nCanada, Mexico, China"},
+    ]
+
+    # Add vertical lines and text annotations manually
+    for event in tariff_events:
+        # Add red dashed vertical line
+        fig.add_shape(
+            type="line",
+            x0=event["date"],
+            x1=event["date"],
+            y0=0,
+            y1=1,
+            xref="x",
+            yref="paper",
+            line=dict(color="red", width=1, dash="dash")
+        )
+        # Add annotation
+        fig.add_annotation(
+            x=event["date"],
+            y=1,
+            xref="x",
+            yref="paper",
+            text=event["label"] + f"<br>({event['date'].strftime('%Y-%m-%d')})",
+            showarrow=False,
+            font=dict(color="red"),
+            align="left"
+        )
+
+    # Layout settings
     fig.update_layout(
-        title="Daily Nowcast PCE & Core PCE Inflation - Cleveland Fed",
+        title="Inflation Rate with 2025 Tariff Events",
         xaxis_title="Date",
-        yaxis_title="Inflation Rate %",
-        legend_title="Inflation Type",
+        yaxis_title="Inflation Rate (%)",
+        legend_title="Inflation Metrics",
         width=1200,
         height=600
     )
+
     return fig
 
 def create_pce_china_mxp_chart(pce, china_mxp):
