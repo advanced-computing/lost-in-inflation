@@ -3,7 +3,6 @@ import os
 import time
 import pandas as pd
 import content as c
-from Gbqload import load_bigquery_data
 from helpers import load_csv_data
 from charts import create_inflation_chart, create_pce_china_mxp_chart
 from data_quality import run_quality_checks  # Import data quality checks
