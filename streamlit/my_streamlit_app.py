@@ -7,22 +7,26 @@ from helpers import load_csv_data
 from charts import create_inflation_chart, create_pce_china_mxp_chart
 from data_quality import run_quality_checks  # Import data quality checks
 
-# Paths
+# ======================
+# Paths & App Setup
+# ======================
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 st.set_page_config(page_title="Tariff-Inflation Analysis", layout="wide")
-
 st.title("Tariff-Inflation Analysis")
 st.caption("By Ibrahim & Isaura")
 
-# Create Tabs
+# ======================
+# Tabs
+# ======================
 tab1, tab2 = st.tabs(["📄 Proposal & Project Description", "📊 Analysis"])
 
-# =======================
+# ======================
 # Tab 1: Proposal
-# =======================
+# ======================
 with tab1:
     st.header("Proposal")
+
     st.subheader("What dataset are you going to use?")
     st.write(c.USED_DATASETS)
 
@@ -42,39 +46,36 @@ with tab1:
     st.write(c.CHALLENGES)
 
     st.header("Updates")
+
     st.subheader("Post-review Insights")
     st.write(c.INSIGHTS)
 
     st.subheader("Post-review Adjustments")
     st.write(c.ADJUSTMENTS)
 
-# =======================
+# ======================
 # Tab 2: Analysis
-# =======================
+# ======================
 with tab2:
     st.header("Analysis")
 
     @st.cache_data
     def get_data():
+        # BigQuery query (currently not used but included for completeness)
         pce_query = """
         SELECT Label, `PCE Inflation`, `Core PCE Inflation`
         FROM `sipa-adv-c-ibrahim-isaura.inflation_data.monthly_pce_inflation`
         """
+
+        # === Load datasets from local CSVs (or switch to BigQuery if preferred)
         fed = load_csv_data(
             os.path.join(BASE_DIR, "monthly-inflation-data.csv"),
             drop_cols=[],
             date_col="Label"
         )
-
-        # Convert Label to datetime (MM/DD/YYYY format is okay without format arg)
         fed["Label"] = pd.to_datetime(fed["Label"], errors="coerce")
-        fed = fed.dropna(subset=["Label"])
-        fed = fed.sort_values("Label")
-
-        # Set the date as the index
+        fed = fed.dropna(subset=["Label"]).sort_values("Label")
         fed.set_index("Label", inplace=True)
-
-        # Select only relevant columns
         pce_columns = ["PCE Inflation", "Core PCE Inflation"]
         fed = fed[pce_columns]
 
@@ -91,7 +92,7 @@ with tab2:
             create_date_from=['Year', 'Month']
         )
 
-        # Run Data Quality Checks
+        # === Run data quality checks
         st.write("🔍 Running data quality checks...")
         run_quality_checks(fed, expected_columns=pce_columns, date_column="Label", numeric_columns=pce_columns)
         run_quality_checks(china_mxp, expected_columns=["Date", "ChinaMXP"], date_column="Date", numeric_columns=["ChinaMXP"])
@@ -103,8 +104,8 @@ with tab2:
         data = get_data()
         time.sleep(1)
 
+    # === Visualizations
     st.write("Let's see what we got")
-
     st.write(c.INTRO_TEXT)
     st.plotly_chart(create_inflation_chart(data["fed"]), use_container_width=True)
 
