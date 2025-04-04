@@ -10,7 +10,7 @@ To get this app working, please follow the following instructions:
 (3) Activate virtual environment using the code that works for your platform, such as venv\Scripts\activate for Windows
 (4) Install requirements.txt to ensure you have all the packages needed
 (5) Build the app locally by the opening the python file "my_streamlit_app.py" and running it using ctrl d
-(5) Next, deploy the app using the command: streamlit run streamlit/my_streamlit_app.py
+(6) Next, deploy the app using the command: streamlit run streamlit/my_streamlit_app.py
 
 Our deployed app can be accessed publicly via: https://lost-in-inflationgit-project.streamlit.app/
 
