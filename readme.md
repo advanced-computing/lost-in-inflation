@@ -8,9 +8,9 @@ To get this app working, please follow the following instructions:
 (1) Clone our repository locally using: https://github.com/advanced-computing/lost-in-inflation.git
 (2) Create a virtual environment using the command python -m venv .venv
 (3) Activate virtual environment using the code that works for your platform, such as venv\Scripts\activate for Windows
-(4) Install requirements.txt to ensure you have all the packages needed
+(4) Install requirements.txt to ensure you have all the packages needed. If you encounter errors, such as "no module named plotly found", install it manually using "pip install plotly" to bypass this type of error. No further errors have yet been identified. For all other errors, you might need to rely on external sources to troubleshoot  
 (5) Build the app locally by the opening the python file "my_streamlit_app.py" and running it using ctrl d
-(6) Next, deploy the app using the command: streamlit run streamlit/my_streamlit_app.py
+(6) Next, open the app locally using the command in your bash terminal: streamlit run streamlit/my_streamlit_app.py
 
 Our deployed app can be accessed publicly via: https://lost-in-inflationgit-project.streamlit.app/
 
