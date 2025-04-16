@@ -1,20 +1,30 @@
 import streamlit as st
-import os
-import time
 import pandas as pd
+import os
+import json
+import time
+from google.cloud import bigquery
+from google.oauth2 import service_account
+
 import content as c
-from helpers import load_csv_data
 from charts import create_inflation_chart, create_pce_china_mxp_chart
-from data_quality import run_quality_checks  # Import data quality checks
+from data_quality import run_quality_checks
 
 # ======================
-# Paths & App Setup
+# Streamlit Setup
 # ======================
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-
 st.set_page_config(page_title="Tariff-Inflation Analysis", layout="wide")
 st.title("Tariff-Inflation Analysis")
 st.caption("By Ibrahim & Isaura")
+
+# ======================
+# BigQuery Setup
+# ======================
+PROJECT_ID = st.secrets["google_cloud"]["project_id"]
+with open(st.secrets["google_cloud"]["service_account_file"], "r") as f:
+    credentials_dict = json.load(f)
+credentials = service_account.Credentials.from_service_account_info(credentials_dict)
+bq_client = bigquery.Client(credentials=credentials, project=PROJECT_ID)
 
 # ======================
 # Tabs
@@ -56,41 +66,46 @@ with tab1:
 # ======================
 # Tab 2: Analysis
 # ======================
-with tab2:
+with tab2: 
     st.header("Analysis")
 
     @st.cache_data
     def get_data():
-        # BigQuery query (currently not used but included for completeness)
-        pce_query = """
-        SELECT Label, `PCE Inflation`, `Core PCE Inflation`
-        FROM `sipa-adv-c-ibrahim-isaura.inflation_data.monthly_pce_inflation`
+        # === Load Monthly PCE (Fed) data from BigQuery ===
+        fed_query = """
+            SELECT `Label`, `PCE Inflation`, `Core PCE Inflation`
+            FROM `sipa-adv-c-ibrahim-isaura.inflation_data.monthly_pce_inflation`
+            WHERE `Label` IS NOT NULL
+            ORDER BY `Label`
         """
 
-        # === Load datasets from local CSVs (or switch to BigQuery if preferred)
-        fed = load_csv_data(
-            os.path.join(BASE_DIR, "monthly-inflation-data.csv"),
-            drop_cols=[],
-            date_col="Label"
-        )
+        fed = bq_client.query(fed_query).to_dataframe()
         fed["Label"] = pd.to_datetime(fed["Label"], errors="coerce")
-        fed = fed.dropna(subset=["Label"]).sort_values("Label")
         fed.set_index("Label", inplace=True)
         pce_columns = ["PCE Inflation", "Core PCE Inflation"]
         fed = fed[pce_columns]
 
-        china_mxp = load_csv_data(
-            os.path.join(BASE_DIR, "EIUCOCHNTOT.csv"),
-            period_col="Period",
-            drop_cols=['Year', 'Period'],
-            start_date="2018-01-01"
-        )
+        # === Load China MXP data from BigQuery ===
+        china_query = """
+            SELECT Date, ChinaMXP
+            FROM `sipa-adv-c-ibrahim-isaura.inflation_data.china_mxp`
+            WHERE Date IS NOT NULL AND ChinaMXP IS NOT NULL
+            ORDER BY Date
+        """
+        china_mxp = bq_client.query(china_query).to_dataframe()
+        china_mxp["Date"] = pd.to_datetime(china_mxp["Date"], errors="coerce")
+        china_mxp = china_mxp[china_mxp["Date"].notna()]
 
-        pce = load_csv_data(
-            os.path.join(BASE_DIR, "MoM PCE.csv"),
-            drop_cols=['Year', 'Month'],
-            create_date_from=['Year', 'Month']
-        )
+        # === Load MoM PCE data from BigQuery ===
+        pce_query = """
+            SELECT Date, PCE
+            FROM `sipa-adv-c-ibrahim-isaura.inflation_data.mom_pce`
+            WHERE Date IS NOT NULL AND PCE IS NOT NULL
+            ORDER BY Date
+        """
+        pce = bq_client.query(pce_query).to_dataframe()
+        pce["Date"] = pd.to_datetime(pce["Date"], errors="coerce")
+        pce = pce[pce["Date"].notna()]
 
         # === Run data quality checks
         st.write("🔍 Running data quality checks...")
@@ -111,3 +126,4 @@ with tab2:
 
     st.write(c.PCE_CHINA_TEXT)
     st.plotly_chart(create_pce_china_mxp_chart(data["pce"], data["china_mxp"]), use_container_width=True)
+

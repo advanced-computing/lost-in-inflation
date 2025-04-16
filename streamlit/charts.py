@@ -1,5 +1,6 @@
 import plotly.graph_objects as go
 from datetime import datetime
+import pandas as pd
 
 def create_inflation_chart(df):
     """Creates a Plotly chart for PCE and Core PCE inflation data with 2025 tariff events."""
@@ -59,14 +60,41 @@ def create_inflation_chart(df):
     return fig
 
 def create_pce_china_mxp_chart(pce, china_mxp):
-    if 'PCE' not in pce.columns or 'ChinaMXP' not in china_mxp.columns:
-        raise ValueError("Missing required columns in data.")
+    if "PCE" not in pce.columns or "Date" not in pce.columns:
+        raise ValueError("Missing PCE or Date column in PCE dataframe.")
+    if "ChinaMXP" not in china_mxp.columns or "Date" not in china_mxp.columns:
+        raise ValueError("Missing ChinaMXP or Date column in China MXP dataframe.")
+
+    # Ensure Date columns are datetime
+    pce["Date"] = pd.to_datetime(pce["Date"], errors="coerce")
+    china_mxp["Date"] = pd.to_datetime(china_mxp["Date"], errors="coerce")
+
+    # Drop NaNs in value columns
+    pce = pce.dropna(subset=["PCE"])
+    china_mxp = china_mxp.dropna(subset=["ChinaMXP"])
+
+    # Inner join for aligned plotting
+    merged = pd.merge(pce, china_mxp, on="Date", how="inner")
 
     fig = go.Figure()
 
-    # Add main data lines
-    fig.add_trace(go.Scatter(x=pce['Date'], y=pce['PCE'], name='PCE', yaxis='y1', mode='lines'))
-    fig.add_trace(go.Scatter(x=china_mxp['Date'], y=china_mxp['ChinaMXP'], name='China MXP', yaxis='y2', mode='lines'))
+    # PCE (left y-axis)
+    fig.add_trace(go.Scatter(
+        x=merged["Date"],
+        y=merged["PCE"],
+        name="PCE Inflation",
+        yaxis="y1",
+        mode="lines+markers"
+    ))
+
+    # China MXP (right y-axis)
+    fig.add_trace(go.Scatter(
+        x=merged["Date"],
+        y=merged["ChinaMXP"],
+        name="China MXP",
+        yaxis="y2",
+        mode="lines+markers"
+    ))
 
     # Tariff event markers
     tariff_events = [
@@ -78,27 +106,20 @@ def create_pce_china_mxp_chart(pce, china_mxp):
         {"date": datetime(2021, 6, 9), "label": "Biden Keeps China Tariffs"},
     ]
 
-    # Add vertical lines + manual annotations
     for event in tariff_events:
-        event_date = event["date"]
-        label_text = f"{event['label']} ({event_date.strftime('%Y-%m-%d')})"
-
-        # Add vertical line using shape
         fig.add_shape(
             type="line",
-            x0=event_date, x1=event_date,
+            x0=event["date"], x1=event["date"],
             y0=0, y1=1,
             xref="x", yref="paper",
             line=dict(color="red", width=1, dash="dash")
         )
-
-        # Add annotation near top
         fig.add_annotation(
-            x=event_date,
+            x=event["date"],
             y=1,
             xref="x",
             yref="paper",
-            text=label_text,
+            text=f"{event['label']}<br>({event['date'].strftime('%Y-%m-%d')})",
             showarrow=False,
             font=dict(color="red", size=10),
             align="left",
@@ -106,14 +127,19 @@ def create_pce_china_mxp_chart(pce, china_mxp):
             yanchor="bottom"
         )
 
-    # Layout
     fig.update_layout(
         title="PCE Inflation vs. China MXP",
         xaxis_title="Date",
-        yaxis=dict(title="PCE Inflation Rate %"),
-        yaxis2=dict(title="China MXP Index", overlaying="y", side="right"),
+        yaxis=dict(title="PCE Inflation", side="left"),
+        yaxis2=dict(
+            title="China MXP",
+            overlaying="y",
+            side="right",
+            showgrid=False
+        ),
         width=1200,
-        height=600
+        height=600,
+        legend=dict(x=0.01, y=0.99)
     )
 
     return fig
