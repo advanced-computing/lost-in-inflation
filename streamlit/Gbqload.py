@@ -119,7 +119,7 @@ def load_china_mxp():
         print(f"✅ Table {TABLE_ID_2} created.")
 
     df2 = pd.read_csv(CSV_FILE_2)
-    df2["Date"] = pd.to_datetime(df2["Period"], errors="coerce").dt.date
+    df2["Date"] = pd.to_datetime(df2["Date"], errors="coerce").dt.date
     df2 = df2[["Date", "ChinaMXP"]].dropna()
 
     job_config2 = bigquery.LoadJobConfig(
