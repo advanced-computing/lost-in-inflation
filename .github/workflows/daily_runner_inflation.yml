@@ -8,6 +8,8 @@ on:
 jobs:
   daily-pipeline:
     runs-on: ubuntu-latest
+    env:
+      GOOGLE_APPLICATION_CREDENTIALS_JSON: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
 
     steps:
       - name: 📁 Checkout Repo
