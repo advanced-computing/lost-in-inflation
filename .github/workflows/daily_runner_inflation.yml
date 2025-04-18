@@ -16,19 +16,23 @@ jobs:
       - name: 🐍 Set Up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.10"
+          python-version: "3.12"
 
       - name: 📦 Install Dependencies
         run: |
           pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: 🔐 Configure GCP Credentials
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS_JSON: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+      - name: Write GCP service account key
         run: |
-          echo "$GOOGLE_APPLICATION_CREDENTIALS_JSON" > gcp-key.json
-          export GOOGLE_APPLICATION_CREDENTIALS=gcp-key.json
+          mkdir -p streamlit
+          echo "${{ secrets.DATA_LOADING }}" > streamlit/sipa-adv-c-ibrahim-isaura-b600557db0a3.json
+  
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: '${{ secrets.DATA_LOADING }}'
+  
 
       - name: 🚀 Run Daily Data Job
         run: python streamlit/daily_runner.py
