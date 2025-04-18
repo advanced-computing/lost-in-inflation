@@ -25,16 +25,6 @@ jobs:
           pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Write GCP service account key
-        run: |
-          mkdir -p streamlit
-          echo "${{ secrets.DATA_LOADING }}" > streamlit/sipa-adv-c-ibrahim-isaura-b600557db0a3.json
-  
-      - name: Authenticate to GCP
-        uses: google-github-actions/auth@v1
-        with:
-          credentials_json: '${{ secrets.DATA_LOADING }}'
-  
-
       - name: 🚀 Run Daily Data Job
         run: python streamlit/daily_runner.py
+
