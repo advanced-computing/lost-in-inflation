@@ -13,14 +13,20 @@ from helpers import combine_clean_monthly_csvs
 # ======================
 # Authentication
 # ======================
-PROJECT_ID = st.secrets["google_cloud"]["project_id"]
-with open(st.secrets["google_cloud"]["service_account_file"], "r") as f:
-    credentials_dict = json.load(f)
-DATASET_ID = "inflation_data"
+if "GOOGLE_APPLICATION_CREDENTIALS_JSON" in os.environ:
+    print("🔐 Using GitHub Actions secret for authentication.")
+    credentials_dict = json.loads(os.environ["GOOGLE_APPLICATION_CREDENTIALS_JSON"])
+    PROJECT_ID = credentials_dict["project_id"]
+else:
+    print("🔐 Using Streamlit secrets for local dev.")
+    import streamlit as st
+    PROJECT_ID = st.secrets["google_cloud"]["project_id"]
+    with open(st.secrets["google_cloud"]["service_account_file"], "r") as f:
+        credentials_dict = json.load(f)
 
 credentials = service_account.Credentials.from_service_account_info(credentials_dict)
 client = bigquery.Client(credentials=credentials, project=PROJECT_ID)
-dataset_ref = client.dataset(DATASET_ID)
+dataset_ref = client.dataset("inflation_data")
 
 # ======================
 # Load Monthly PCE Inflation Data
