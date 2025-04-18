@@ -1,0 +1,42 @@
+name: Daily ETL → BigQuery
+
+on:
+  schedule:
+    # 9 AM America/New_York → 13:00 UTC
+    - cron: '0 13 * * *'
+  workflow_dispatch:
+
+jobs:
+  etl:
+    runs-on: ubuntu-latest
+    # temporarily targeting Lab13_Ibrahim branch
+    if: github.ref == 'refs/heads/Lab13_Ibrahim'
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          pip install --no-cache-dir -r requirements.txt
+
+      - name: Write GCP service account key
+        run: |
+          mkdir -p streamlit
+          echo "${{ secrets.DATA_LOADING }}" > streamlit/sipa-adv-c-ibrahim-isaura-b600557db0a3.json
+
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: '${{ secrets.DATA_LOADING }}'
+
+      - name: Run ETL script
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: streamlit/sipa-adv-c-ibrahim-isaura-b600557db0a3.json
+        run: |
+          python streamlit/Gbqload.py
