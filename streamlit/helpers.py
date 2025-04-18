@@ -21,13 +21,13 @@ def download_current_month_csv(save_dir="streamlit/fed_data_per_month"):
 
     HEADLESS = False  # 👈 Toggle this as needed
     chrome_options = Options()
-# Fix for GitHub Actions: prevent Chrome session conflicts
     import tempfile
     user_data_dir = tempfile.mkdtemp()
     chrome_options.add_argument(f"--user-data-dir={user_data_dir}")
 
     if HEADLESS:
         chrome_options.add_argument("--headless=new")
+
     chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--window-size=1280,800")
     chrome_options.add_experimental_option("prefs", {
