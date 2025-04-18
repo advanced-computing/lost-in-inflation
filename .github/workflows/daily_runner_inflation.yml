@@ -1,0 +1,34 @@
+name: Daily BigQuery Upload
+
+on:
+  schedule:
+    - cron: "0 10 * * *"  # Daily at 10:00 UTC (6am Eastern)
+  workflow_dispatch:
+
+jobs:
+  daily-pipeline:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📁 Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: 🐍 Set Up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: 📦 Install Dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: 🔐 Configure GCP Credentials
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS_JSON: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+        run: |
+          echo "$GOOGLE_APPLICATION_CREDENTIALS_JSON" > gcp-key.json
+          export GOOGLE_APPLICATION_CREDENTIALS=gcp-key.json
+
+      - name: 🚀 Run Daily Data Job
+        run: python streamlit/daily_runner.py
