@@ -3,6 +3,7 @@ import pandas as pd
 import os
 import time
 from glob import glob
+import tempfile
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
@@ -19,9 +20,9 @@ def download_current_month_csv(save_dir="streamlit/fed_data_per_month"):
     filename = f"{year_month_str}.csv"
     save_path = os.path.join(save_dir, filename)
 
-    HEADLESS = False  # 👈 Toggle this as needed
+    HEADLESS = os.environ.get("GITHUB_ACTIONS") == "true"  # Auto-headless in CI
+
     chrome_options = Options()
-    import tempfile
     user_data_dir = tempfile.mkdtemp()
     chrome_options.add_argument(f"--user-data-dir={user_data_dir}")
 
@@ -36,6 +37,7 @@ def download_current_month_csv(save_dir="streamlit/fed_data_per_month"):
         "download.directory_upgrade": True,
         "safebrowsing.enabled": True
     })
+
     service = Service(ChromeDriverManager().install())
     driver = webdriver.Chrome(service=service, options=chrome_options)
 
