@@ -9,6 +9,7 @@ from google.oauth2 import service_account
 import content as c
 from charts import create_inflation_chart, create_pce_china_mxp_chart
 from data_quality import run_quality_checks
+from auth import get_bigquery_credentials
 
 # ======================
 # Streamlit Setup
@@ -20,10 +21,8 @@ st.caption("By Ibrahim & Isaura")
 # ======================
 # BigQuery Setup
 # ======================
-PROJECT_ID = st.secrets["google_cloud"]["project_id"]
-with open(st.secrets["google_cloud"]["service_account_file"], "r") as f:
-    credentials_dict = json.load(f)
-credentials = service_account.Credentials.from_service_account_info(credentials_dict)
+
+credentials, PROJECT_ID = get_bigquery_credentials()
 bq_client = bigquery.Client(credentials=credentials, project=PROJECT_ID)
 
 # ======================

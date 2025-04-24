@@ -8,23 +8,13 @@ from google.oauth2 import service_account
 import streamlit as st
 from helpers import download_current_month_csv  # ✅ import the scraper
 from helpers import combine_clean_monthly_csvs
-
+from auth import get_bigquery_credentials
 
 # ======================
 # Authentication
 # ======================
-if "GOOGLE_APPLICATION_CREDENTIALS_JSON" in os.environ:
-    print("🔐 Using GitHub Actions secret for authentication.")
-    credentials_dict = json.loads(os.environ["GOOGLE_APPLICATION_CREDENTIALS_JSON"])
-    PROJECT_ID = credentials_dict["project_id"]
-else:
-    print("🔐 Using Streamlit secrets for local dev.")
-    import streamlit as st
-    PROJECT_ID = st.secrets["google_cloud"]["project_id"]
-    with open(st.secrets["google_cloud"]["service_account_file"], "r") as f:
-        credentials_dict = json.load(f)
 
-credentials = service_account.Credentials.from_service_account_info(credentials_dict)
+credentials, PROJECT_ID = get_bigquery_credentials()
 client = bigquery.Client(credentials=credentials, project=PROJECT_ID)
 dataset_ref = client.dataset("inflation_data")
 
