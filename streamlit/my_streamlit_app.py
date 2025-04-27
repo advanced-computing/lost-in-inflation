@@ -19,13 +19,12 @@ st.caption("By Ibrahim & Isaura")
 # ======================
 # BigQuery Setup
 # ======================
-
-# BigQuery Setup
 credentials_dict = json.loads(st.secrets["big_query"]["service_account_file"])
 PROJECT_ID = st.secrets["big_query"]["project_id"]
 
 credentials = service_account.Credentials.from_service_account_info(credentials_dict)
 bq_client = bigquery.Client(credentials=credentials, project=PROJECT_ID)
+
 
 # ======================
 # Tabs
