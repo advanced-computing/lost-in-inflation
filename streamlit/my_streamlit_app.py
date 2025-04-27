@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import os
 import json
 import time
 from google.cloud import bigquery
@@ -9,7 +8,6 @@ from google.oauth2 import service_account
 import content as c
 from charts import create_inflation_chart, create_pce_china_mxp_chart
 from data_quality import run_quality_checks
-from auth import get_bigquery_credentials
 
 # ======================
 # Streamlit Setup
@@ -24,7 +22,8 @@ st.caption("By Ibrahim & Isaura")
 
 # BigQuery Setup
 credentials_dict = json.loads(st.secrets["big_query"]["service_account_file"])
-PROJECT_ID = credentials_dict["project_id"]
+PROJECT_ID = st.secrets["big_query"]["project_id"]
+
 credentials = service_account.Credentials.from_service_account_info(credentials_dict)
 bq_client = bigquery.Client(credentials=credentials, project=PROJECT_ID)
 
