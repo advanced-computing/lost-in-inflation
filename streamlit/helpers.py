@@ -54,7 +54,7 @@ def download_current_month_csv(save_dir="streamlit/fed_data_per_month"):
         except TimeoutException:
             print("🍪 No cookie popup found.")
 
-        WebDriverWait(driver, 10).until(
+        WebDriverWait(driver, 5).until(
             EC.presence_of_element_located((By.TAG_NAME, "h1"))
         )
         print("✅ Page headline loaded.")
@@ -65,7 +65,7 @@ def download_current_month_csv(save_dir="streamlit/fed_data_per_month"):
         time.sleep(2)
 
         accordion_xpath = '//*[@id="section-title-2-19"]/h5/button/div/div/div'
-        accordion_button = WebDriverWait(driver, 10).until(
+        accordion_button = WebDriverWait(driver, 5).until(
             EC.element_to_be_clickable((By.XPATH, accordion_xpath))
         )
         driver.execute_script("arguments[0].click();", accordion_button)
@@ -76,7 +76,7 @@ def download_current_month_csv(save_dir="streamlit/fed_data_per_month"):
         # Try Option 1 – direct XPath click
         try:
             csv_button_xpath = '/html/body/div[2]/main/div/div[3]/div[1]/div[5]/div/ul/li[1]/div[2]/div/div[1]/div/chart-nowcasting/button[2]'
-            csv_button = WebDriverWait(driver, 8).until(
+            csv_button = WebDriverWait(driver, 5).until(
                 EC.element_to_be_clickable((By.XPATH, csv_button_xpath))
             )
             csv_button.click()
@@ -87,14 +87,14 @@ def download_current_month_csv(save_dir="streamlit/fed_data_per_month"):
             try:
                 # Hover over visible inner chart element
                 chart_inner_xpath = '//chart-nowcasting//*[name()="svg" or name()="canvas" or name()="div"]'
-                chart_target = WebDriverWait(driver, 8).until(
+                chart_target = WebDriverWait(driver, 5).until(
                     EC.visibility_of_element_located((By.XPATH, chart_inner_xpath))
                 )
                 ActionChains(driver).move_to_element(chart_target).perform()
                 print("🖱 Hovered over chart's visible inner element to trigger buttons.")
                 time.sleep(1)
 
-                csv_button = WebDriverWait(driver, 8).until(
+                csv_button = WebDriverWait(driver, 5).until(
                     EC.element_to_be_clickable((By.XPATH, csv_button_xpath))
                 )
                 csv_button.click()
@@ -129,8 +129,7 @@ def download_current_month_csv(save_dir="streamlit/fed_data_per_month"):
                     raise scan_fail
 
         # Wait for file to download
-        # Wait for download to complete
-        timeout = 15  # seconds
+        timeout = 5  # seconds
         start_time = time.time()
         downloaded_file = None
 
