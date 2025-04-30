@@ -18,3 +18,5 @@ db-dtypes #Need this for streamlit to call data from bigquery
 selenium #needed to simulate a user clicking download because the Fed does not allow scripts to grab the file directly
 webdriver-manager
 google-cloud-bigquery-storage
+et-xmlfile==2.0.0 
+openpyxl==3.1.5

@@ -1,6 +1,7 @@
 import plotly.graph_objects as go
 from datetime import datetime
 import pandas as pd
+from pandas.tseries.offsets import MonthEnd
 
 def create_inflation_chart(df):
     """Creates a Plotly chart for PCE and Core PCE inflation data with 2025 tariff events."""
@@ -140,6 +141,101 @@ def create_pce_china_mxp_chart(pce, china_mxp):
         width=1200,
         height=600,
         legend=dict(x=0.01, y=0.99)
+    )
+
+    return fig
+
+def create_decomposition_chart(filepath: str):
+    xls = pd.ExcelFile(filepath)
+
+    # Define sheets with grouping
+    sheet_config = {
+        "gasoline_prices": ("Energy", "pct_change"),
+        "average_hourly_earnings": ("Services Proxy", "pct_change"),
+        "money_supply": ("Money Supply", "pct_change"),
+        "consumer_sentiment": ("Services Proxy", "pct_change"),
+        "retail_and_services": ("Core PCE", "pct_change"),  # this will be used as the black line
+        "food_prices": {
+            "Meat": "Food",
+            "Dairy": "Food",
+            "Cereals": "Food",
+            "Oils": "Food",
+            "Sugar": "Food"
+        }
+    }
+
+    combined = pd.DataFrame()
+
+    # Helper to load and process each individual sheet
+    def process_sheet(sheet_name, col_mapping, group_name=None):
+        df = xls.parse(sheet_name).dropna()
+        df[df.columns[0]] = pd.to_datetime(df[df.columns[0]]) + MonthEnd(0)
+        df = df[df[df.columns[0]] >= "2025-01-01"]
+        df = df.rename(columns={df.columns[0]: "Date"})
+
+        if isinstance(col_mapping, dict):  # multi-column food_prices
+            dfs = []
+            for original_col, new_group in col_mapping.items():
+                sub_df = df[["Date", original_col]].copy()
+                sub_df[original_col] = sub_df[original_col].pct_change()
+                sub_df = sub_df.rename(columns={original_col: "Value"})
+                sub_df["Category"] = new_group
+                dfs.append(sub_df)
+            return pd.concat(dfs)
+        else:
+            series = df[[ "Date", df.columns[1] ]].copy()
+            series[df.columns[1]] = series[df.columns[1]].pct_change()
+            series = series.rename(columns={df.columns[1]: "Value"})
+            series["Category"] = group_name
+            return series.dropna()
+
+    processed_dfs = []
+
+    for sheet, config in sheet_config.items():
+        if isinstance(config, tuple):
+            group_label, method = config
+            processed_dfs.append(process_sheet(sheet, sheet_config[sheet][0], group_label))
+        elif isinstance(config, dict):
+            processed_dfs.append(process_sheet(sheet, config))
+
+    # Combine and aggregate categories
+    long_df = pd.concat(processed_dfs).dropna()
+    agg_df = long_df.groupby(["Date", "Category"]).sum().reset_index()
+
+    # Pivot for stacking
+    pivot = agg_df.pivot(index="Date", columns="Category", values="Value").fillna(0)
+    pivot["Core PCE"] = pivot["Core PCE"]  # keep line before removing it from bar stack
+    bar_categories = pivot.drop(columns=["Core PCE"]).columns
+
+    # Create figure
+    fig = go.Figure()
+
+    # Add stacked bars
+    for cat in bar_categories:
+        fig.add_trace(go.Bar(
+            x=pivot.index,
+            y=pivot[cat],
+            name=cat
+        ))
+
+    # Add Core PCE line
+    fig.add_trace(go.Scatter(
+        x=pivot.index,
+        y=pivot["Core PCE"],
+        mode="lines+markers",
+        name="Core PCE (MoM)",
+        line=dict(color="black", width=2),
+        showlegend=True
+    ))
+
+    # Final layout
+    fig.update_layout(
+        title="Inflation Decomposition (MoM % Change)",
+        barmode="relative",
+        xaxis_title="Date",
+        yaxis_title="Contribution to MoM Inflation (%)",
+        template="plotly_white",
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
     )
 
     return fig
