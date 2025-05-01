@@ -56,16 +56,20 @@ We are using such nowcasts to get a sense of daily expectations around PCE month
 While the below chart gauges historical co-movement on a monthly basis, the nowcast above will allow us to view expectations for the month ahead before official CPI & PCE data are released.
 This data is thus key for testing our hypothesis of increased inflation as a result of more tariffs.
 
+Surprisingly, we have not seen inflation rise in tandem with tariff implementation, but our decomposition dataset may help shine some light on this. 
+
 **Our data set:** [Cleveland Fed Nowcasting](https://www.clevelandfed.org/indicators-and-data/inflation-nowcasting)
 """
 
 PCE_CHINA_TEXT = """
-The second chart links inflation, represented by **PCE**, with the price of imports from **China** during the first tariff war. 
+The following chart links inflation, represented by **PCE**, with the price of imports from **China** during the first tariff war. 
 The metric used is the **Import Export Price Index (MXP)**, which measures the price changes of goods and services traded with the mentioned country.
 
 While it's not possible to correctly assess correlation without running regression analysis, the chart shows some level of co-movement, particularly from mid-2021 to 2025.
 Our interest is in analyzing phases of the trade wars with China and their correlation to the **PCE inflation marker**.
 In the next phase of our analysis, we will begin looking into such co-movements by doing **regression analyses** of this data and overlaying our current charts with **tariff implementation dates** and other pertinent data sets that we intend to add.
+
+Interestingly, we are observing falling Chinese import prices as a result of hiking tariffs on Chinese goods.
 
 **Data Sources:**  
 - [MXP Data](https://data.bls.gov/pdq/SurveyOutputServlet)  

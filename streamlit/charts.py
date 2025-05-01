@@ -2,6 +2,8 @@ import plotly.graph_objects as go
 from datetime import datetime
 import pandas as pd
 from pandas.tseries.offsets import MonthEnd
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
 
 def create_inflation_chart(df):
     """Creates a Plotly chart for PCE and Core PCE inflation data with major 2025 tariff events."""
@@ -162,7 +164,7 @@ def create_decomposition_chart(filepath: str):
         "gasoline_prices": ("Energy", "pct_change"),
         "average_hourly_earnings": ("Services Proxy", "pct_change"),
         "money_supply": ("Money Supply", "pct_change"),
-        "consumer_sentiment": ("Services Proxy", "pct_change"),
+        "consumer_sentiment": ("Sentiment Proxy", "pct_change"),
         "retail_and_services": ("Headline PCE", "pct_change"),  # now labeled correctly
         "food_prices": {
             "Meat": "Food",
@@ -247,4 +249,50 @@ def create_decomposition_chart(filepath: str):
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
     )
 
+    return fig
+
+def run_pce_pca(df: pd.DataFrame):
+    features = ['Energy', 'Food', 'Money Supply', 'Sentiment Proxy']
+    X = df[features].dropna()
+    
+    # Standardize
+    scaler = StandardScaler()
+    X_scaled = scaler.fit_transform(X)
+
+    # PCA
+    pca = PCA(n_components=2)
+    X_pca = pca.fit_transform(X_scaled)
+
+    # Explained variance
+    variance_ratios = pca.explained_variance_ratio_
+
+    # Component loadings
+    loadings = pd.DataFrame(pca.components_.T, columns=['PC1', 'PC2'], index=features)
+
+    return variance_ratios, loadings, X_pca
+
+def plot_pca_loadings(loadings):
+    category_colors = {
+        "Energy": "#636EFA",
+        "Food": "#EF553B",
+        "Money Supply": "#00CC96",
+        "Services Proxy": "#AB63FA",
+        "Earnings Proxy": "#AB63FA",
+        "Sentiment Proxy": "#AB63FA"  
+    }
+
+    fig = go.Figure()
+    for pc in loadings.columns:
+        fig.add_trace(go.Bar(
+            x=loadings.index,
+            y=loadings[pc],
+            name=pc,
+            marker_color=[category_colors.get(x, "#CCCCCC") for x in loadings.index]  # fallback to gray
+        ))
+    fig.update_layout(
+        title="PCA Component Loadings",
+        yaxis_title="Loading Value",
+        barmode="group",
+        template="plotly_white"
+    )
     return fig

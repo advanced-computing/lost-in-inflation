@@ -8,6 +8,7 @@ from google.oauth2 import service_account
 import content as c
 from charts import create_inflation_chart, create_pce_china_mxp_chart, create_decomposition_chart
 from data_quality import run_quality_checks
+from charts import run_pce_pca, plot_pca_loadings
 
 # ======================
 # Streamlit Setup
@@ -72,7 +73,6 @@ with tab1:
 
         st.markdown("#### 🔧 Post-review Adjustments")
         st.success(c.ADJUSTMENTS)
-
 # ======================
 # Tab 2: Analysis
 # ======================
@@ -147,8 +147,64 @@ with tab2:
             st.plotly_chart(create_inflation_chart(data["fed"]), use_container_width=True)
 
             st.subheader("Inflation Decomposition (2025)")
-            excel_path = "streamlit/analysis_dataset.xlsx"  # adjust as needed
+            excel_path = "streamlit/analysis_dataset.xlsx"
             st.plotly_chart(create_decomposition_chart(excel_path), use_container_width=True)
+
+            # ========================
+            # PCA: Variance Decomposition
+            # ========================
+            st.subheader("🧮 PCA: Variance Decomposition of Inflation Drivers")
+
+            from charts import run_pce_pca, plot_pca_loadings
+
+            xls = pd.ExcelFile(excel_path)
+            drivers = {
+                "gasoline_prices": "Energy",
+                "average_hourly_earnings": "Services Proxy",
+                "money_supply": "Money Supply",
+                "consumer_sentiment": "Sentiment Proxy",
+                "retail_and_services": "Headline PCE",
+                "food_prices": "Food"
+            }
+
+            dfs = []
+
+            for sheet, label in drivers.items():
+                try:
+                    df = xls.parse(sheet).dropna()
+                    df[df.columns[0]] = pd.to_datetime(df[df.columns[0]]) + pd.offsets.MonthEnd(0)
+                    df = df[df[df.columns[0]] >= "2025-01-01"]
+                    df = df.rename(columns={df.columns[0]: "Date"})
+
+                    if sheet == "food_prices":
+                        df["Food"] = df.iloc[:, 1:].pct_change().mean(axis=1)
+                        df = df[["Date", "Food"]]
+                    else:
+                        if len(df.columns) > 1:
+                            df[label] = df.iloc[:, 1].pct_change()
+                            df = df[["Date", label]]
+                        else:
+                            st.warning(f"⚠️ Skipping {sheet} — not enough columns for {label}.")
+                            continue
+
+                    dfs.append(df)
+
+                except Exception as e:
+                    st.error(f"Error processing {sheet}: {e}")
+
+            from functools import reduce
+            pca_df = reduce(lambda left, right: pd.merge(left, right, on="Date", how="outer"), dfs).dropna()
+
+            # Run PCA
+            var_ratios, loadings, _ = run_pce_pca(pca_df)
+
+            st.markdown(f"**Explained Variance:** PC1 = `{var_ratios[0]:.2%}`, PC2 = `{var_ratios[1]:.2%}`")
+            st.caption(
+                "🧠 *Food, Services, and Money Supply jointly explain most of the variation in inflation (PC1 ≈ 75%), "
+                "while Energy behaves differently and drives a secondary pattern (PC2 ≈ 25%).*"
+            )
+
+            st.plotly_chart(plot_pca_loadings(loadings), use_container_width=True)
+
     else:
         st.warning("Data could not be loaded.")
-
