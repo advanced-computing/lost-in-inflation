@@ -2,7 +2,6 @@
 
 USED_DATASETS = """
 - Daily Inflation projection data from the Fed: [Cleveland Fed Inflation Nowcasting](https://www.clevelandfed.org/indicators-and-data/inflation-nowcasting)
-- (Potentially) Daily gas averages by state: [AAA State Gas Price Averages](https://gasprices.aaa.com/state-gas-price-averages/) as well as other alternative data showcasing the impact of inflation on consumers.
 - Inflation data from other countries - TBD based on the below considerations.
 """  
 
