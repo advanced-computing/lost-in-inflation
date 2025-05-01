@@ -4,7 +4,7 @@ import pandas as pd
 from pandas.tseries.offsets import MonthEnd
 
 def create_inflation_chart(df):
-    """Creates a Plotly chart for PCE and Core PCE inflation data with 2025 tariff events."""
+    """Creates a Plotly chart for PCE and Core PCE inflation data with major 2025 tariff events."""
     fig = go.Figure()
 
     # Plot each inflation series
@@ -17,15 +17,23 @@ def create_inflation_chart(df):
             connectgaps=False
         ))
 
-    # Tariff event dates (announced + implemented only)
+    # Tariff event dates with labels
     tariff_events = [
-        {"date": datetime(2025, 2, 1), "label": "Tariffs Announced\nCanada, Mexico, China"},
-        {"date": datetime(2025, 3, 4), "label": "Tariffs Implemented\nCanada, Mexico, China"},
+        {"date": datetime(2025, 2, 1), "label": "Tariffs Announced<br>Canada, Mexico, China"},
+        {"date": datetime(2025, 2, 10), "label": "Tariffs on Steel & Aluminum"},
+        {"date": datetime(2025, 3, 4), "label": "Tariffs Implemented<br>Canada, Mexico, China"},
+        {"date": datetime(2025, 4, 2), "label": "Liberation Day Tariffs"},
+        {"date": datetime(2025, 4, 10), "label": "Tariffs on China<br>raised to 145%"},
     ]
 
-    # Add vertical lines and text annotations manually
-    for event in tariff_events:
-        # Add red dashed vertical line
+    # Predefined y-positions to stagger annotation text
+    y_positions = [1.05, 0.9, 1.0, 0.85, 0.95]
+
+    # Add vertical lines and annotations
+    for i, event in enumerate(tariff_events):
+        y_pos = y_positions[i % len(y_positions)]  # Loop through y_positions if needed
+
+        # Vertical dashed line
         fig.add_shape(
             type="line",
             x0=event["date"],
@@ -36,26 +44,28 @@ def create_inflation_chart(df):
             yref="paper",
             line=dict(color="red", width=1, dash="dash")
         )
-        # Add annotation
+
+        # Text annotation
         fig.add_annotation(
             x=event["date"],
-            y=1,
+            y=y_pos,
             xref="x",
             yref="paper",
-            text=event["label"] + f"<br>({event['date'].strftime('%Y-%m-%d')})",
+            text=f"{event['label']}<br>({event['date'].strftime('%Y-%m-%d')})",
             showarrow=False,
-            font=dict(color="red"),
+            font=dict(color="red", size=11),
             align="left"
         )
 
-    # Layout settings
+    # Layout
     fig.update_layout(
         title="Inflation Rate with 2025 Tariff Events",
         xaxis_title="Date",
         yaxis_title="Inflation Rate (%)",
         legend_title="Inflation Metrics",
         width=1200,
-        height=600
+        height=600,
+        template="plotly_white"
     )
 
     return fig
@@ -144,7 +154,6 @@ def create_pce_china_mxp_chart(pce, china_mxp):
     )
 
     return fig
-
 def create_decomposition_chart(filepath: str):
     xls = pd.ExcelFile(filepath)
 
@@ -154,7 +163,7 @@ def create_decomposition_chart(filepath: str):
         "average_hourly_earnings": ("Services Proxy", "pct_change"),
         "money_supply": ("Money Supply", "pct_change"),
         "consumer_sentiment": ("Services Proxy", "pct_change"),
-        "retail_and_services": ("Core PCE", "pct_change"),  # this will be used as the black line
+        "retail_and_services": ("Headline PCE", "pct_change"),  # now labeled correctly
         "food_prices": {
             "Meat": "Food",
             "Dairy": "Food",
@@ -183,7 +192,7 @@ def create_decomposition_chart(filepath: str):
                 dfs.append(sub_df)
             return pd.concat(dfs)
         else:
-            series = df[[ "Date", df.columns[1] ]].copy()
+            series = df[["Date", df.columns[1]]].copy()
             series[df.columns[1]] = series[df.columns[1]].pct_change()
             series = series.rename(columns={df.columns[1]: "Value"})
             series["Category"] = group_name
@@ -204,8 +213,8 @@ def create_decomposition_chart(filepath: str):
 
     # Pivot for stacking
     pivot = agg_df.pivot(index="Date", columns="Category", values="Value").fillna(0)
-    pivot["Core PCE"] = pivot["Core PCE"]  # keep line before removing it from bar stack
-    bar_categories = pivot.drop(columns=["Core PCE"]).columns
+    pivot["Headline PCE"] = pivot["Headline PCE"]  # retain line before dropping from stack
+    bar_categories = pivot.drop(columns=["Headline PCE"]).columns
 
     # Create figure
     fig = go.Figure()
@@ -218,22 +227,22 @@ def create_decomposition_chart(filepath: str):
             name=cat
         ))
 
-    # Add Core PCE line
+    # Add Headline PCE line
     fig.add_trace(go.Scatter(
         x=pivot.index,
-        y=pivot["Core PCE"],
+        y=pivot["Headline PCE"],
         mode="lines+markers",
-        name="Core PCE (MoM)",
+        name="Headline PCE (MoM)",
         line=dict(color="black", width=2),
         showlegend=True
     ))
 
     # Final layout
     fig.update_layout(
-        title="Inflation Decomposition (MoM % Change)",
+        title="Headline PCE Decomposition (MoM % Change)",
         barmode="relative",
         xaxis_title="Date",
-        yaxis_title="Contribution to MoM Inflation (%)",
+        yaxis_title="Contribution to MoM Headline Inflation (%)",
         template="plotly_white",
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
     )

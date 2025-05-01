@@ -13,8 +13,16 @@ from data_quality import run_quality_checks
 # Streamlit Setup
 # ======================
 st.set_page_config(page_title="Tariff-Inflation Analysis", layout="wide")
-st.title("Tariff-Inflation Analysis")
-st.caption("By Ibrahim & Isaura")
+st.markdown("# 📈 **Tariff-Inflation Dashboard**")
+st.caption("By Ibrahim & Isaura – Tracking real-time U.S. inflation shifts post-2025 tariff events.")
+
+# ======================
+# Optional Sidebar
+# ======================
+with st.sidebar:
+    st.markdown("### 🇺🇸 Tariff Overview")
+    st.markdown("This dashboard explores how newly announced tariffs affect U.S. inflation in real time.")
+    st.markdown("- 📅 **Year**: 2025\n- 🧮 **Metric**: Cleveland Fed Nowcasting\n- 🌍 **Focus**: Trade Policy & Inflation")
 
 # ======================
 # BigQuery Setup
@@ -25,7 +33,6 @@ PROJECT_ID = st.secrets["big_query"]["project_id"]
 credentials = service_account.Credentials.from_service_account_info(credentials_dict)
 bq_client = bigquery.Client(credentials=credentials, project=PROJECT_ID)
 
-
 # ======================
 # Tabs
 # ======================
@@ -35,33 +42,36 @@ tab1, tab2 = st.tabs(["📄 Proposal & Project Description", "📊 Analysis"])
 # Tab 1: Proposal
 # ======================
 with tab1:
-    st.header("Proposal")
+    st.markdown("## 📄 Proposal")
 
-    st.subheader("What dataset are you going to use?")
-    st.write(c.USED_DATASETS)
+    with st.container():
+        st.markdown("#### 📊 What dataset are you going to use?")
+        st.write(c.USED_DATASETS)
 
-    st.subheader("What are your research question(s)?")
-    st.write(c.RESEARCH_QUESTIONS)
+        st.markdown("#### ❓ What are your research question(s)?")
+        st.write(c.RESEARCH_QUESTIONS)
 
-    st.subheader("Google Colab Link")
-    st.write(c.GC_LINK)
+        st.markdown("#### 🔗 Google Colab Link")
+        st.write(c.GC_LINK)
 
-    st.subheader("Target Visualization")
-    st.write(c.TARGET_VIS)
+        st.markdown("#### 🧭 Target Visualization")
+        st.write(c.TARGET_VIS)
 
-    st.subheader("Known Unknowns")
-    st.write(c.KNOWN_UNKNOWN)
+    with st.container():
+        st.markdown("#### 🧩 Known Unknowns")
+        st.warning(c.KNOWN_UNKNOWN)
 
-    st.subheader("Anticipated Challenges")
-    st.write(c.CHALLENGES)
+        st.markdown("#### ⚙️ Anticipated Challenges")
+        st.warning(c.CHALLENGES)
 
-    st.header("Updates")
+    st.markdown("## 📝 Updates")
 
-    st.subheader("Post-review Insights")
-    st.write(c.INSIGHTS)
+    with st.container():
+        st.markdown("#### 💡 Post-review Insights")
+        st.info(c.INSIGHTS)
 
-    st.subheader("Post-review Adjustments")
-    st.write(c.ADJUSTMENTS)
+        st.markdown("#### 🔧 Post-review Adjustments")
+        st.success(c.ADJUSTMENTS)
 
 # ======================
 # Tab 2: Analysis

@@ -9,7 +9,7 @@ USED_DATASETS = """
 RESEARCH_QUESTIONS = """
 Expecting increased use of tariffs by the new Trump administration, we will try to answer the following:
 - Can we see in real time the effects of Trump's tariffs on inflation in the United States?
-- Are American consumers experiencing more inflation compared to their [Canadian*] and [Mexican*] counterparts? (*subject to change based on trajectory of trade policy)
+- Are American consumers experiencing more inflation as a result of Trump's tariff policies?
 """
 
 GC_LINK = """
@@ -26,21 +26,21 @@ KNOWN_UNKNOWN = """
 """
 
 CHALLENGES = """
-- Technical difficulty in accessing gas prices data through API.
+- Technical difficulty in accessing inflaiton and gas prices data through API.
 - Unifying measures of inflation (baskets of goods used to measure inflation could be different between countries).
 - Different levels of data availability and publishing frequency between sources.
 """
 
 INSIGHTS = """
-- One major insight is that establishing the relation requires more than 1-2 datasets and requires regression analysis, not only analyzing charts.
+- One major insight is that establishing the relation requires more than 1-2 datasets and requires further statiscial analysis, not just simple correlations between charts.
 - Another insight is that the implementation of announced tariffs wasn't as expected; it was delayed twice, which reduces chances of witnessing the relation of interest.
 """
 
 ADJUSTMENTS= """
-- We will narrow the scope in two ways:
-  - We will focus on PCE metrics to avoid confusion with CPI metrics.
-  - We initially had a large scope geographically, so we will narrow the scope to the US to have more targeted insights.
-- We will highlight major policy updates (e.g., tariff announcements and implementation).
+- We narrowed the scope in two ways:
+  - Focused only on PCE metrics to avoid confusion with CPI metrics.
+  - Narrowed the scope to US only for more targeted insights.
+  - Highlight major policy updates (e.g., tariff announcements and implementation).
 """  
 
 
